@@ -242,6 +242,8 @@ def profile_layout(layout, index: int) -> dict:
     signature = defaultdict(int)
     for ph in placeholders:
         ph_type = ph["type"].lower()
+        if ph_type == "object":
+            ph_type = "body"
         signature[ph_type] += 1
     
     return {

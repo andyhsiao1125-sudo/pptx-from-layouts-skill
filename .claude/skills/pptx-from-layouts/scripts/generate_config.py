@@ -106,6 +106,10 @@ def extract_layout_info(prs) -> list[dict]:
                     PP_PLACEHOLDER.PICTURE: "picture",
                     PP_PLACEHOLDER.TABLE: "table",
                     PP_PLACEHOLDER.CHART: "chart",
+                    # Untyped OOXML placeholders default to "obj", so PowerPoint
+                    # "Content" placeholders and Google Slides exports arrive as
+                    # OBJECT, not BODY. Treat them as writable body areas.
+                    PP_PLACEHOLDER.OBJECT: "body",
                 }
                 ph_type = type_map.get(ph.type, "other")
                 signature[ph_type] += 1

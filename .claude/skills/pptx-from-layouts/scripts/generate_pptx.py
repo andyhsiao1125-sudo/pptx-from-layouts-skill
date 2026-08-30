@@ -1276,9 +1276,15 @@ def sort_placeholders_by_position(placeholders: list) -> list:
     ))
 
 
+# Untyped OOXML placeholders default to "obj", so PowerPoint "Content"
+# placeholders and Google Slides exports arrive as OBJECT, not BODY.
+# Treat both as writable body placeholders.
+BODY_PLACEHOLDER_TYPES = ('BODY', 'OBJECT')
+
+
 def get_largest_body_placeholder(placeholders: list) -> dict | None:
     """Find the largest BODY placeholder by area."""
-    body_phs = [p for p in placeholders if p.get('type') == 'BODY']
+    body_phs = [p for p in placeholders if p.get('type') in BODY_PLACEHOLDER_TYPES]
     if not body_phs:
         return None
     
@@ -1299,7 +1305,7 @@ def get_title_placeholder(placeholders: list) -> dict | None:
 
 def get_body_placeholders(placeholders: list, sort_horizontal: bool = False) -> list:
     """Get all BODY placeholders, optionally sorted left-to-right."""
-    body_phs = [p for p in placeholders if p.get('type') == 'BODY']
+    body_phs = [p for p in placeholders if p.get('type') in BODY_PLACEHOLDER_TYPES]
     if sort_horizontal:
         body_phs.sort(key=lambda p: p.get('position', {}).get('left_inches', 0))
     return body_phs
@@ -5741,7 +5747,7 @@ def _get_placeholder_with_fallback(placeholders: list, target_type: str, slide_n
         return matches[0], False
 
     # Fallback to BODY (most versatile)
-    body_phs = [p for p in placeholders if p.get('type') == 'BODY']
+    body_phs = [p for p in placeholders if p.get('type') in BODY_PLACEHOLDER_TYPES]
     if body_phs:
         # Prefer largest body placeholder
         largest = max(body_phs, key=lambda p: p.get('width', 0) * p.get('height', 0))
