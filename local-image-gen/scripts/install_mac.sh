@@ -94,7 +94,7 @@ ok "已把 mflux-generate --help 存到 ${OUT_DIR}/mflux_help.txt"
 # ---------------------------------------------------------------- 4. imagegen
 say "4/7 imagegen 環境與參數核對"
 uv sync --project "${PROJECT_DIR}" --quiet
-CHECK_OUT=$(uv run --project "${PROJECT_DIR}" imagegen check) || { echo "${CHECK_OUT}"; fail "imagegen check 未通過（參數與目前 MFLUX 版本不符）"; }
+CHECK_OUT=$("${PROJECT_DIR}/bin/imagegen" check) || { echo "${CHECK_OUT}"; fail "imagegen check 未通過（參數與目前 MFLUX 版本不符）"; }
 echo "   ${CHECK_OUT}"
 ok "mflux-generate 參數齊全"
 
@@ -117,7 +117,7 @@ else
   echo "   注意：實際下載由 MFLUX 決定；正常會取用上方檢查的 q4 預量化 repo。"
   ask "確認下載上方列出的模型並生成測試圖？" || fail "使用者取消下載（之後重新執行本腳本即可從這一步繼續）"
   set +e
-  uv run --project "${PROJECT_DIR}" imagegen generate --allow-download \
+  "${PROJECT_DIR}/bin/imagegen" generate --allow-download \
       --seed 42 --width 512 --height 512 --steps 4 --quantize 4 \
       --prompt "${PROMPT}" -o "${TEST_PNG}"
   RC=$?

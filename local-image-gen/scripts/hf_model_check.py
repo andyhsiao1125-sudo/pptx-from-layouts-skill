@@ -52,13 +52,31 @@ def is_q4(repo_id: str) -> bool:
     return any(k in name for k in ("q4", "4bit", "4-bit"))
 
 
+# Repos derived from schnell that are NOT the plain text-to-image base model.
+VARIANT_WORDS = ("controlnet", "canny", "depth", "fill", "redux", "kontext", "lora", "upscal",
+                 "inpaint", "outpaint", "ip-adapter", "ipadapter", "catvton", "ic-edit", "concept",
+                 "krea", "dev", "pro")
+
+
+def is_variant(repo_id: str) -> bool:
+    name = repo_id.lower().split("/", 1)[-1]
+    return any(w in name for w in VARIANT_WORDS)
+
+
 def verdict(upstream: dict | None, candidates: list[dict]) -> dict:
-    """Pure decision logic (unit-tested). Picks the q4 candidate and checks it."""
+    """Pure decision logic (unit-tested).
+
+    Requires exactly ONE q4 repo of the plain schnell base model. Variants
+    (ControlNet, Depth, Fill, ...) are excluded; zero or several remaining
+    candidates is a failure, never a guess.
+    """
     checks, chosen = [], None
-    q4 = [c for c in candidates if is_q4(c["id"] or "")]
-    checks.append(("找到 schnell 的 4-bit 預量化 repo", bool(q4)))
-    if q4:
-        chosen = q4[0]
+    base_q4 = [c for c in candidates if is_q4(c["id"] or "") and not is_variant(c["id"] or "")]
+    checks.append(("找到 schnell 基礎模型的 4-bit 預量化 repo（已排除 ControlNet 等變體）", bool(base_q4)))
+    if len(base_q4) > 1:
+        checks.append(("候選 repo 唯一（目前有多個：" + ", ".join(c["id"] for c in base_q4) + "）", False))
+    if len(base_q4) == 1:
+        chosen = base_q4[0]
         checks.append(("檔案大小資訊完整", chosen["sizes_complete"] and chosen["weight_bytes"] > 0))
         lic = (chosen["license"] or "").lower()
         checks.append((f"預量化 repo 授權為 {EXPECTED_LICENSE}", lic == EXPECTED_LICENSE))

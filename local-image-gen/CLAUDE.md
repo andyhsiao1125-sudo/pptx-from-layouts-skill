@@ -34,7 +34,7 @@
 從儲存庫根目錄執行：
 
 ```bash
-uv run --project local-image-gen imagegen generate --prompt "<英文提示詞>" -o local-image-gen/output/<簡短檔名>.png
+local-image-gen/bin/imagegen generate --prompt "<英文提示詞>" -o local-image-gen/output/<簡短檔名>.png
 ```
 
 - **提示詞用英文。** FLUX 對英文的理解最好。使用者用中文描述時，由 Claude 轉寫成具體的英文提示詞，內容包括主題、構圖、風格、背景，並加上 `no text`。

@@ -1,0 +1,14 @@
+#!/bin/bash
+# imagegen launcher. Runs the package straight from the project directory with
+# the project's .venv interpreter, so it does not depend on an editable-install
+# .pth file (macOS/iCloud can mark those hidden, and Python 3.13+ skips hidden
+# .pth files, which shows up as "ModuleNotFoundError: No module named 'imagegen'").
+set -euo pipefail
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+PY="${DIR}/.venv/bin/python"
+if [ ! -x "${PY}" ]; then
+  echo "找不到 ${PY}；請先執行：uv sync --project \"${DIR}\"" >&2
+  exit 3
+fi
+export PYTHONPATH="${DIR}${PYTHONPATH:+:${PYTHONPATH}}"
+exec "${PY}" -m imagegen "$@"

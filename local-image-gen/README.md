@@ -64,7 +64,7 @@ uv sync --project local-image-gen
 這個指令會找到 `mflux-generate`、讀取版本，並檢查目前版本的 `--help` 是否包含本工具會用到的所有參數。
 
 ```bash
-uv run --project local-image-gen imagegen check
+local-image-gen/bin/imagegen check
 ```
 
 ## 二、首次下載模型（需要人工確認）
@@ -101,7 +101,7 @@ curl -s "https://huggingface.co/api/models/mflux-community/<repo>?blobs=true" | 
 三件事都確認後，才執行第一次生成。只有這一次加 `--allow-download`：
 
 ```bash
-uv run --project local-image-gen imagegen generate --allow-download --seed 42 \
+local-image-gen/bin/imagegen generate --allow-download --seed 42 \
   --prompt "A realistic studio photograph of a single white ceramic sphere on a light gray background, soft lighting, clean composition, no text." \
   -o local-image-gen/output/test_seed42.png
 ```
@@ -112,13 +112,13 @@ uv run --project local-image-gen imagegen generate --allow-download --seed 42 \
 
 ```bash
 # 試跑：只驗證參數並顯示將執行的指令，不實際執行
-uv run --project local-image-gen imagegen generate --prompt "..." --dry-run
+local-image-gen/bin/imagegen generate --prompt "..." --dry-run
 
 # 生成（預設 schnell、q4、512×512、4 步，seed 隨機但會記錄）
-uv run --project local-image-gen imagegen generate --prompt "..." -o local-image-gen/output/x.png
+local-image-gen/bin/imagegen generate --prompt "..." -o local-image-gen/output/x.png
 
 # 16:9 簡報用圖
-uv run --project local-image-gen imagegen generate --prompt "..." --width 1024 --height 576 -o local-image-gen/output/slide.png
+local-image-gen/bin/imagegen generate --prompt "..." --width 1024 --height 576 -o local-image-gen/output/slide.png
 ```
 
 | 參數 | 說明 |

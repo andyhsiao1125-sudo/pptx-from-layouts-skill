@@ -49,3 +49,23 @@ def test_missing_sizes_and_gated_fail():
 def test_license_from_tags():
     s = mc.summarize({"id": "x", "tags": ["license:apache-2.0"], "siblings": []})
     assert s["license"] == "apache-2.0"
+
+
+def test_controlnet_variant_is_not_chosen():
+    # Regression: the user's real run picked this ControlNet repo as "schnell q4".
+    v = mc.verdict(UP, [mc.summarize(info("mflux-community/flux-1-schnell-controlnet-canny-mflux-q4",
+                                          sizes=(GB * 10.61,)))])
+    assert not v["all_pass"] and v["chosen"] is None
+
+
+def test_base_chosen_among_variants():
+    v = mc.verdict(UP, [mc.summarize(info("mflux-community/flux-1-schnell-controlnet-canny-mflux-q4")),
+                        mc.summarize(info("mflux-community/flux-1-schnell-depth-mflux-q4")),
+                        mc.summarize(info("mflux-community/flux-1-schnell-mflux-q4"))])
+    assert v["all_pass"] and v["chosen"]["id"] == "mflux-community/flux-1-schnell-mflux-q4"
+
+
+def test_multiple_base_candidates_is_ambiguous():
+    v = mc.verdict(UP, [mc.summarize(info("mflux-community/flux-1-schnell-mflux-q4")),
+                        mc.summarize(info("mflux-community/schnell-4bit"))])
+    assert not v["all_pass"] and v["chosen"] is None

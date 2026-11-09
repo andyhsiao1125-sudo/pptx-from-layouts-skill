@@ -20,5 +20,10 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools]
 packages = ["imagegen", "imagegen.providers"]
 
+[tool.uv]
+# Do not install this project into .venv (no editable .pth file); run it via bin/imagegen.
+package = false
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
