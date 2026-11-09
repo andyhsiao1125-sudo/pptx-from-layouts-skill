@@ -9,7 +9,17 @@
 - **MFLUX：** 負責實際推論。以 `uv tool` 方式獨立安裝，不是本專案的套件依賴。
 - **imagegen：** 本專案。負責檢查參數、呼叫 MFLUX、驗證圖片、寫入紀錄。
 
-## 一、前提與安裝
+## 〇、一鍵安裝（建議）
+
+在 Mac 終端機執行（不要加 sudo）：
+
+```bash
+bash local-image-gen/scripts/install_mac.sh
+```
+
+腳本會依序完成第一節與第二節的所有步驟：環境檢查、安裝 uv 與 MFLUX、`imagegen check`、唯讀查詢模型來源／授權／大小、下載並生成測試圖、驗證 PNG。只在兩處暫停請你按 y 確認：安裝 uv／MFLUX 前、下載模型前。下載前檢查任一項不合格（找不到 q4 repo、授權不是 Apache-2.0、檔案過大、需登入）就會停止，不下載。可重複執行，已完成的步驟會略過；全程紀錄存在 `local-image-gen/output/install_*.log`。
+
+## 一、前提與安裝（手動步驟）
 
 需要的環境：
 - Apple Silicon Mac
