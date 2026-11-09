@@ -125,6 +125,10 @@ These are distinct modes with different code paths:
 
 Don't use edit for layout changes — regenerate.
 
+## Image generation (`cloud-image-gen/`)
+
+`cloud-image-gen/` is a separate, self-contained CLI (`imagegen`) that calls the official OpenAI / Gemini image APIs. It is not part of the pptx skill. When the user asks for an image ("生成一張…圖", "make an illustration of …"), follow `cloud-image-gen/CLAUDE.md` — read it first: it holds the paid-call authorization status, the exact command, exit-code handling (billing errors stop immediately, never switch models), and the secret-handling rules. Generated images can then be inserted into decks via this skill.
+
 ## Working in this repo
 
 - When modifying the pipeline, touch `scripts/` + `lib/` in the skill; don't add new top-level directories.

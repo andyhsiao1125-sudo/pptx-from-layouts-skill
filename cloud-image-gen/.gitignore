@@ -1,0 +1,15 @@
+# 金鑰
+.env
+.env.*
+!.env.example
+
+# 生成的圖片與紀錄（不提交；需要保留的成品請另行複製到使用位置）
+output/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+build/

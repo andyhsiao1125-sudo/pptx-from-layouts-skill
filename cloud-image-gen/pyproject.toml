@@ -1,0 +1,28 @@
+[project]
+name = "imagegen"
+version = "0.1.0"
+description = "CLI that generates images through the official OpenAI and Gemini APIs and records each run."
+requires-python = ">=3.11"
+dependencies = [
+    "openai>=3.46,<4",
+    "google-genai>=3.0,<4",
+    "pillow>=11",
+    "python-dotenv>=1.0",
+]
+
+[project.scripts]
+imagegen = "imagegen.cli:main"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["imagegen", "imagegen.providers"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+filterwarnings = ["ignore::SyntaxWarning"]

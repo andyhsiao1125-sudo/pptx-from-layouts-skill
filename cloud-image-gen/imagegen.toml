@@ -1,0 +1,93 @@
+# imagegen 設定檔：模型清單、各模型可用參數、價格參考。
+#
+# 模型名稱與參數值的依據（2026-11-09 查核）：
+#   - OpenAI：官方 Python SDK openai 3.46.0 的 types/image_model.py、image_generate_params.py，
+#     以及 developers.openai.com 圖片生成指南／價目表（經 Context7 官方文件索引取得）。
+#   - Gemini：官方 SDK google-genai 3.0.0 的 types.ImageConfig，
+#     以及 ai.google.dev 圖片生成頁與價目表（經 Context7 官方文件索引取得）。
+# 價格會變動；pricing_note 只作為事前估算參考，不代表實際帳單。
+# 以下 pricing_note 是 2026-11-09 經 Context7 索引讀到的官方內容，正式付費使用前請以官方價目頁再核對一次。
+#
+# 切換模型：
+#   1. 指令列 --model <id>
+#   2. 環境變數 IMAGEGEN_OPENAI_MODEL / IMAGEGEN_GEMINI_MODEL
+#   3. 本檔 providers.<name>.default_model
+# 只能使用本檔列出的模型；要新增模型，請先查官方文件再加一段 [providers.<name>.models."<id>"]。
+
+[defaults]
+provider = "openai"          # 可被環境變數 IMAGEGEN_DEFAULT_PROVIDER 覆寫
+output_dir = "output"        # 相對於本專案根目錄（cloud-image-gen/）
+max_images_per_call = 1      # 單次呼叫張數上限；需求為「預設且只生成 1 張」
+max_retries = 2              # 只針對暫時性錯誤（連線、5xx、OpenAI 速率限制）重試
+timeout_seconds = 300
+
+# ---------------------------------------------------------------- OpenAI
+[providers.openai]
+api_key_env = "OPENAI_API_KEY"
+model_env = "IMAGEGEN_OPENAI_MODEL"
+default_model = "gpt-image-2"
+
+[providers.openai.models."gpt-image-2"]
+sizes = ["auto", "1024x1024", "1536x1024", "1024x1536"]
+custom_size = true           # 官方：寬高皆為 16 的倍數、長寬比 1:3～3:1、最大 3840x2160
+qualities = ["low", "medium", "high", "auto"]
+backgrounds = ["auto", "opaque", "transparent"]   # transparent 對 gpt-image-2 為 preview
+output_formats = ["png", "jpeg", "webp"]
+moderations = ["auto", "low"]
+defaults = { size = "1024x1024", quality = "low", output_format = "png" }
+pricing_note = "官方每張估價（1024x1024）：low $0.006、medium $0.053、high $0.211；1024x1536／1536x1024：low $0.005、medium $0.041、high $0.165。Token 價：影像輸出 $30／1M、文字輸入 $5／1M。"
+
+[providers.openai.models."gpt-image-2.5-flare"]
+sizes = ["auto", "1024x1024", "1536x1024", "1024x1536"]
+custom_size = true
+qualities = ["low", "medium", "high", "xhigh", "max", "auto"]
+backgrounds = ["auto", "opaque", "transparent"]
+output_formats = ["png", "jpeg", "webp"]
+moderations = ["auto", "low"]
+defaults = { size = "1024x1024", quality = "low", output_format = "png" }
+pricing_note = "Token 價與 gpt-image-2 相同（影像輸出 $30／1M），但同品質的 token 數可能不同；官方未提供固定每張價，以回傳 usage 計算。"
+
+[providers.openai.models."gpt-image-2.5-sunburst"]
+sizes = ["auto", "1024x1024", "1536x1024", "1024x1536"]
+custom_size = true
+qualities = ["low", "medium", "high", "xhigh", "max", "auto"]
+backgrounds = ["auto", "opaque", "transparent"]
+output_formats = ["png", "jpeg", "webp"]
+moderations = ["auto", "low"]
+defaults = { size = "1024x1024", quality = "low", output_format = "png" }
+pricing_note = "Token 價與 gpt-image-2 相同（影像輸出 $30／1M），但同品質的 token 數可能不同；官方未提供固定每張價，以回傳 usage 計算。"
+
+[providers.openai.models."gpt-image-1-mini"]
+sizes = ["auto", "1024x1024", "1536x1024", "1024x1536"]
+custom_size = false
+qualities = ["low", "medium", "high", "auto"]
+backgrounds = ["auto", "opaque", "transparent"]
+output_formats = ["png", "jpeg", "webp"]
+moderations = ["auto", "low"]
+defaults = { size = "1024x1024", quality = "low", output_format = "png" }
+pricing_note = "官方每張估價（1024x1024）：low $0.005、medium $0.011、high $0.036；1024x1536／1536x1024：low $0.006、medium $0.015、high $0.052。"
+
+# ---------------------------------------------------------------- Gemini
+[providers.gemini]
+api_key_env = "GEMINI_API_KEY"
+api_key_env_fallback = "GOOGLE_API_KEY"
+model_env = "IMAGEGEN_GEMINI_MODEL"
+default_model = "gemini-2.5-flash-image"
+
+[providers.gemini.models."gemini-2.5-flash-image"]
+aspect_ratios = ["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"]
+image_sizes = []             # 官方：此模型不支援 image_size
+defaults = { aspect_ratio = "1:1" }
+pricing_note = "官方：付費層每張約 $0.039（1024px）；免費層 Not available。"
+
+[providers.gemini.models."gemini-nano-banana-2.1"]
+aspect_ratios = ["1:1", "1:4", "1:8", "2:3", "3:2", "3:4", "4:1", "4:3", "4:5", "5:4", "8:1", "9:16", "16:9", "21:9"]
+image_sizes = ["1K", "2K", "4K"]
+defaults = { aspect_ratio = "1:1", image_size = "1K" }
+pricing_note = "官方：影像輸出 $30／1M tokens；1K≈$0.0336、2K≈$0.0504、4K≈$0.113 每張。GA／preview 狀態未經本次查核確認。"
+
+[providers.gemini.models."gemini-3-pro-image"]
+aspect_ratios = ["1:1", "2:3", "3:2", "3:4", "4:3", "9:16", "16:9", "21:9"]   # 取 SDK ImageConfig 文件列出的值
+image_sizes = ["1K", "2K", "4K"]
+defaults = { aspect_ratio = "1:1", image_size = "1K" }
+pricing_note = "官方：影像輸出 $120／1M tokens；1K/2K≈$0.134、4K≈$0.24 每張；免費層 Not available。"
