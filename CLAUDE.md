@@ -125,9 +125,9 @@ These are distinct modes with different code paths:
 
 Don't use edit for layout changes — regenerate.
 
-## Image generation (`cloud-image-gen/`)
+## Image generation (`local-image-gen/`)
 
-`cloud-image-gen/` is a separate, self-contained CLI (`imagegen`) that calls the official OpenAI / Gemini image APIs. It is not part of the pptx skill. When the user asks for an image ("生成一張…圖", "make an illustration of …"), follow `cloud-image-gen/CLAUDE.md` — read it first: it holds the paid-call authorization status, the exact command, exit-code handling (billing errors stop immediately, never switch models), and the secret-handling rules. Generated images can then be inserted into decks via this skill.
+`local-image-gen/` is a separate, self-contained CLI (`imagegen`) that runs local text-to-image with MFLUX + FLUX.1-schnell on the user's Apple Silicon Mac. It is not part of the pptx skill, and it uses no cloud/paid image API (the user explicitly cancelled the OpenAI and Gemini providers — do not re-add them). When the user asks for an image ("生成一張…圖", "make an illustration of …"), follow `local-image-gen/CLAUDE.md` — read it first: it holds the model-download status (downloads are off by default and need user approval), the exact command, and exit-code handling. Generated images can then be inserted into decks via this skill.
 
 ## Working in this repo
 

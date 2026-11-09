@@ -1,0 +1,30 @@
+# imagegen 設定檔：本機 MFLUX 生圖。
+#
+# 參數名稱依 MFLUX 官方 README（github.com/mflux-community/mflux，2026-11-09 查閱）：
+#   mflux-generate --model schnell --quantize N --width W --height H --steps S --seed N
+#                  --prompt "..." --output path.png
+# 實際執行前，imagegen 會先跑 `mflux-generate --help`，確認上述每個參數都存在；
+# 缺少任何一個就停止，不猜測新版參數名稱。
+
+[defaults]
+output_dir = "output"          # 相對於本專案根目錄（local-image-gen/）
+timeout_seconds = 1800         # 單張生成逾時上限（含首次載入模型）
+
+[local]
+command = "mflux-generate"
+# PATH 找不到指令時，依序搜尋這些位置（uv tool install 的預設安裝位置）
+search_paths = ["~/.local/bin"]
+default_model = "schnell"      # 可被環境變數 IMAGEGEN_LOCAL_MODEL 覆寫
+# true：執行時設定 HF_HUB_OFFLINE=1，只使用本機已快取的模型，絕不自動下載。
+# 首次下載須由使用者確認後，以 --allow-download 單次放行。
+offline_by_default = true
+
+[local.models.schnell]
+mflux_model = "schnell"        # 傳給 --model 的值
+upstream_repo = "black-forest-labs/FLUX.1-schnell"
+license = "Apache-2.0（依先前規劃；下載前請在 model card 再次核實）"
+quantize_note = "README：--quantize N 對多數內建模型會載入預先量化的 mflux-community/<model>-mflux-q<N> repo；若該位數沒有預量化 repo，會退回下載完整 bf16 權重再量化。schnell 的 q4 repo 名稱與大小尚未核實。"
+quantize_values = [3, 4, 5, 6, 8]
+steps_range = [1, 8]           # schnell 為少步數蒸餾模型；README 範例用 2–4 步
+size_range = [256, 2048]       # 寬高各自的範圍；須為 16 的倍數
+defaults = { quantize = 4, width = 512, height = 512, steps = 4 }

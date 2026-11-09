@@ -1,14 +1,11 @@
 [project]
 name = "imagegen"
-version = "0.1.0"
-description = "CLI that generates images through the official OpenAI and Gemini APIs and records each run."
+version = "0.2.0"
+description = "CLI that runs local MFLUX text-to-image generation and records each run."
 requires-python = ">=3.11"
-dependencies = [
-    "openai>=3.46,<4",
-    "google-genai>=3.0,<4",
-    "pillow>=11",
-    "python-dotenv>=1.0",
-]
+# MFLUX itself is NOT a dependency: it is installed separately as a uv tool
+# (`uv tool install --python 3.13 mflux`) and called as a subprocess.
+dependencies = ["pillow>=11"]
 
 [project.scripts]
 imagegen = "imagegen.cli:main"
@@ -25,4 +22,3 @@ packages = ["imagegen", "imagegen.providers"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-filterwarnings = ["ignore::SyntaxWarning"]
